@@ -1,4 +1,4 @@
-Data Wrangling in R
+Data Wrangling & Tidy Data in R
 ========================================================
 author: Flic Anderson
 date: 29 September 2015
@@ -8,21 +8,50 @@ font-family: 'Telex'
 RBGE Code Group 
 
 
+
 What IS Data Wrangling?!
 ========================================================
 
-For more details on authoring R presentations click the
-**Help** button on the toolbar.
+The process of cleaning, transforming and generally converting raw data into a form which allows easier use later.
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+For reproducible science, this is best done programmatically.  
+
+R is great for this & there are a few great packages which make life much easier (Dplyr, Tidyr, reshape, etc)  
+
+If you work with data, you probably do a lot of data wrangling - congrats! 
+
+
+
+What IS Tidy Data?!
+========================================================
+
+Tidy data is a subset of data wrangling.
+
+The aim is to get your untidy raw data into a structure which allows easy analysis
+
+3 principles:
+- Each variable forms a column
+- Each observation forms a row
+- Each type of observational unit forms a table
+
+
+
+Common Messy Data Issues
+========================================================
+
+Your data might be messy, if:
+- 1) Column headings are values, not variable names 
+- 2) Multiple variables are stored in one column
+- 3) Variables in both rows and columns
+- 4) Multiple types of observational units are stored in the same table
+- 5) A single observational unit is stored in multiple tables
+
+
 
 Let's Go!
 ========================================================
 
 Install & load packages we'll work with:
-
 
 
 ```r
@@ -41,13 +70,174 @@ if (!require(tidyr)){
 # NB: for shorter/simpler code, can just use "library(dplyr)" if it's installed already.
 ```
 
+
+
+Example Data Set: datA
+========================================================
+
+This is **randomly generated** botanical survey data, based on my MSc project data
+
+
+```r
+# data frame: 
+datA <- data.frame(
+        # sampling site codes
+        vegplot=c("S1T1A", "S1T1B", "S1T1C"),  
+        # elevation of sample
+        altM=c(100, 200, 300), 
+        # presence values for taxa
+        T1=sample(0:1, 3, replace=TRUE),  
+        G1=sample(0:1, 3, replace=TRUE),  
+        H2=sample(0:1, 3, replace=TRUE),  
+        H3=sample(0:1, 3, replace=TRUE)
+)
+```
+
+
+
+Messy Data: Problem 1
+========================================================
+
+1) Column headings are values, not variable names
+
+This can be helpful when displaying data, but isn't great for analyses.
+
+Here, the taxa along the top are technically *values*, not variables.
+
+
+```
+  vegplot altM T1 G1 H2 H3
+1   S1T1A  100  0  0  0  0
+2   S1T1B  200  1  0  1  1
+3   S1T1C  300  0  0  1  0
+```
+
+
+
+Messy Data: Fix 1
+========================================================
+
+- pull species from headings into a column we're calling "taxa"
+- 'gather' values under each heading into a column we've called "presence"
+- don't gather site codes or altitude! (use minus symbol)
+
+
+```r
+datA %>% 
+  gather(taxa, presence, -vegplot, -altM) %>%
+  head   # only show first 6 rows
+```
+
+
+
+Messy Data: Fix 1
+========================================================
+
+- pull species from headings into a column we're calling "taxa"
+- **'gather'** values under each heading into a column we've called "presence"
+- don't gather site codes or altitude! (use minus symbol)
+
+
+```
+  vegplot altM taxa presence
+1   S1T1A  100   T1        0
+2   S1T1B  200   T1        1
+3   S1T1C  300   T1        0
+4   S1T1A  100   G1        0
+5   S1T1B  200   G1        0
+6   S1T1C  300   G1        0
+```
+
+
+
+Messy Data: Problem 2
+========================================================
+
+2) Multiple variables are stored in one column
+
+The vegplots variable is made up of a code for each sampling point & represents multiple variables:
+- S1 = site 1 [1:3]
+- T1 = transect 1  \[1:5] (replicates!)
+- A = releve A  [A:F]
+We'll need to split these up if we want to compare things like species by site.
+
+
+```
+     [,1]   
+[1,] "S1T1A"
+[2,] "S1T1B"
+[3,] "S1T1C"
+```
+
+
+
+Messy Data: Fix 2
+========================================================
+
+- we separate site, transect & releve data into columns of their own
+
+
+```r
+datA %>% 
+  separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # separator: numeric => split position
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+  head   # only show first 6 rows
+```
+
+
+
+Messy Data: Fix 2
+========================================================
+
+- we separate site, transect & releve data into columns of their own
+
+
+```
+  site transect releve altM T1 G1 H2 H3
+1   S1       T1      A  100  0  0  0  0
+2   S1       T1      B  200  1  0  1  1
+3   S1       T1      C  300  0  0  1  0
+```
+
+
+
+
+
+
+
+
 Slide With Plot
 ========================================================
 
-![plot of chunk unnamed-chunk-2](R_DataWrangling-figure/unnamed-chunk-2-1.png) 
+![plot of chunk unnamed-chunk-9](R_DataWrangling-figure/unnamed-chunk-9-1.png) 
    
+
+
+Slide Which doesn't show title
+========================================================
+title: false
+
+This slide doesn't show it's title and continues from the rest
+
+
+
 References/Resources
 ========================================================
 
+Tidy Data:
+- http://vita.had.co.nz/papers/tidy-data.pdf
+
+Data Wrangling:
 - https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
 - other things
+
+For making this presentation (R Presentation / Rstudio):  
+- https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations)

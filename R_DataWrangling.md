@@ -16,7 +16,7 @@ The process of cleaning, transforming and generally converting raw data into a f
 
 For reproducible science, this is best done programmatically.  
 
-R is great for this & there are a few great packages which make life much easier (Dplyr, Tidyr, reshape, etc)  
+R is great for this & there are a few great packages which make life much easier (dplyr, tidyr, reshape/reshape2, etc)  
 
 If you work with data, you probably do a lot of data wrangling - congrats! 
 
@@ -72,6 +72,34 @@ if (!require(tidyr)){
 
 
 
+A Brief Intro to the Hadleyverse
+==========================================================
+![alt text](hadleyverse.png)
+
+
+
+A Brief Intro to {dplyr}
+==========================================================
+
+The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...
+
+Hadley Wickham's packages tend to have a particular grammar which is easy to use & quick to learn.
+
+{dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.
+
+
+```r
+datA <- data(iris)
+
+# ordinary R
+###
+
+# dplyr
+###
+```
+
+
+
 Example Data Set: datA
 ========================================================
 
@@ -107,9 +135,9 @@ Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not vari
 
 ```
   vegplot altM T1 G1 H2 H3
-1   S1T1A  100  1  1  1  0
-2   S1T1B  200  1  1  1  0
-3   S1T1C  300  0  1  1  0
+1   S1T1A  100  1  0  1  0
+2   S1T1B  200  1  0  1  0
+3   S1T1C  300  0  0  1  0
 ```
 
 
@@ -145,9 +173,9 @@ Messy Data: Fix 1
 1   S1T1A  100    T1        1
 2   S1T1B  200    T1        1
 3   S1T1C  300    T1        0
-4   S1T1A  100    G1        1
-5   S1T1B  200    G1        1
-6   S1T1C  300    G1        1
+4   S1T1A  100    G1        0
+5   S1T1B  200    G1        0
+6   S1T1C  300    G1        0
 ```
 
 
@@ -212,9 +240,9 @@ Messy Data: Fix 2
 1   S1       T1      A  100    T1        1
 2   S1       T1      B  200    T1        1
 3   S1       T1      C  300    T1        0
-4   S1       T1      A  100    G1        1
-5   S1       T1      B  200    G1        1
-6   S1       T1      C  300    G1        1
+4   S1       T1      A  100    G1        0
+5   S1       T1      B  200    G1        0
+6   S1       T1      C  300    G1        0
 ```
 
 
@@ -256,9 +284,9 @@ Splitting these 'types' of data apart is called 'normalisation' & is done in rel
 1   S1       T1      A  100    T1        1
 2   S1       T1      B  200    T1        1
 3   S1       T1      C  300    T1        0
-4   S1       T1      A  100    G1        1
-5   S1       T1      B  200    G1        1
-6   S1       T1      C  300    G1        1
+4   S1       T1      A  100    G1        0
+5   S1       T1      B  200    G1        0
+6   S1       T1      C  300    G1        0
 ```
 
 
@@ -306,9 +334,9 @@ print
 1   S1       T1      A    T1        1
 2   S1       T1      B    T1        1
 3   S1       T1      C    T1        0
-4   S1       T1      A    G1        1
-5   S1       T1      B    G1        1
-6   S1       T1      C    G1        1
+4   S1       T1      A    G1        0
+5   S1       T1      B    G1        0
+6   S1       T1      C    G1        0
 ```
 
 

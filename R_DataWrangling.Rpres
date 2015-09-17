@@ -16,7 +16,7 @@ The process of cleaning, transforming and generally converting raw data into a f
 
 For reproducible science, this is best done programmatically.  
 
-R is great for this & there are a few great packages which make life much easier (Dplyr, Tidyr, reshape, etc)  
+R is great for this & there are a few great packages which make life much easier (dplyr, tidyr, reshape/reshape2, etc)  
 
 If you work with data, you probably do a lot of data wrangling - congrats! 
 
@@ -69,6 +69,34 @@ if (!require(tidyr)){
 # NB: for shorter/simpler code, can just use "library(dplyr)" if it's installed already.
 
 ```
+
+
+
+A Brief Intro to the Hadleyverse
+==========================================================
+![alt text](hadleyverse.png)
+
+
+
+A Brief Intro to {dplyr}
+==========================================================
+
+The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...
+
+Hadley Wickham's packages tend to have a particular grammar which is easy to use & quick to learn.
+
+{dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.
+
+```{r, eval=FALSE}
+datA <- data(iris)
+
+# ordinary R
+###
+
+# dplyr
+###
+
+````
 
 
 

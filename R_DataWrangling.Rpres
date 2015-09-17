@@ -101,7 +101,7 @@ Messy Data: Problem 1
 
 This can be helpful when displaying data, but isn't great for analyses.
 
-Here, the taxa along the top are technically *values*, not variables.
+Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not variables.
 
 ```{r, echo=FALSE}
 
@@ -114,14 +114,16 @@ datA
 Messy Data: Fix 1
 ========================================================
 
-- pull species from headings into a column we're calling "taxa"
+- pull species from headings into a column we're calling "taxon"
 - 'gather' values under each heading into a column we've called "presence"
 - don't gather site codes or altitude! (use minus symbol)
 
 ```{r, eval=FALSE}
+datA <- 
 datA %>% 
-  gather(taxa, presence, -vegplot, -altM) %>%
-  head   # only show first 6 rows
+  gather(taxon, presence, -vegplot, -altM) %>%
+  head %>%  # only show first 6 rows
+print
 ```
 
 
@@ -129,14 +131,16 @@ datA %>%
 Messy Data: Fix 1
 ========================================================
 
-- pull species from headings into a column we're calling "taxa"
+- pull species from headings into a column we're calling "taxon"
 - **'gather'** values under each heading into a column we've called "presence"
 - don't gather site codes or altitude! (use minus symbol)
 
 ```{r, echo=FALSE}
+datA <- 
 datA %>% 
-  gather(taxa, presence, -vegplot, -altM) %>%
-  head   # only show first 6 rows
+  gather(taxon, presence, -vegplot, -altM) %>%
+  head %>%  # only show first 6 rows
+print
 ```
 
 
@@ -164,18 +168,20 @@ Messy Data: Fix 2
 - we separate site, transect & releve data into columns of their own
 
 ```{r, eval=FALSE}
+datA <- 
 datA %>% 
   separate(
           # column to split
           vegplot, 
           # new column names
           into=c("site", "transect", "releve"), 
-          # separator: numeric => split position
+          # numeric/position separator
           sep=c(2, 4), 
           # remove old vegplot column
           remove=TRUE  
           ) %>%
-  head   # only show first 6 rows
+  head %>%   # only show first 6 rows
+print
 ```
 
 
@@ -186,32 +192,129 @@ Messy Data: Fix 2
 - we separate site, transect & releve data into columns of their own
 
 ```{r, echo=FALSE}
+datA <- 
 datA %>% 
-  separate(vegplot, into=c("site", "transect", "releve"), sep=c(2, 4), remove=TRUE) %>%
-  head   # only show first 6 rows
+  separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+  head %>%   # only show first 6 rows
+print
 ```
 
 
 
-
-
-
-
-
-Slide With Plot
+Messy Data: Problem 3
 ========================================================
+
+3) Variables in both rows and columns
+
+TBC
 
 ```{r, echo=FALSE}
-plot(cars)
+# TBC 
 ```
-   
 
 
-Slide Which doesn't show title
+
+Messy Data: Fix 3
 ========================================================
-title: false
 
-This slide doesn't show it's title and continues from the rest
+- TBC
+
+TBC
+
+```{r, echo=FALSE}
+# TBC 
+```
+
+
+
+Messy Data: Problem 4
+========================================================
+
+4) Multiple types of observational units are stored in the same table
+
+Here, we had elevational data (altM) and species data (taxon, presence) stored in the same table.  That's not tidy data!   
+
+Splitting these 'types' of data apart is called 'normalisation' & is done in relational databases
+
+```{r, echo=FALSE}
+datA
+```
+
+
+
+Messy Data: Fix 4
+========================================================
+
+Split elevation data (altM) amd species data (taxon, presence) off into separate tables.
+```{r, eval=TRUE}
+# environmental data  
+envDat <- 
+   datA %>% 
+      select(site, transect, releve, altM) %>%
+print
+```
+
+
+
+Messy Data: Fix 4
+========================================================
+
+Split elevation data (altM) amd species data (taxon, presence) off into separate tables.
+```{r, eval=TRUE}
+# species data
+spsDat <- 
+   datA %>%
+      select(site, transect, releve, taxon, presence) %>%
+print
+```
+
+
+Messy Data: Problem 5
+========================================================
+
+5) A single observational unit is stored in multiple tables
+
+Sometimes we'll accumulate several files which are often the same type of observation. 
+
+For instance, temperature data from a logger split into separate files by time (Sept2015.csv, Oct2015.csv, etc). 
+
+```{r, echo=FALSE}
+# TBC 
+```
+
+
+
+Messy Data: Fix 5
+========================================================
+
+- TBC
+
+TBC
+
+```{r, echo=FALSE}
+# TBC 
+```
+
+
+
+
+Now What?
+========================================================
+
+Now your data is tidy, it's far easier to analyse, plot & share!
+
+```{r, eval=TRUE}
+plot(spsDat)
+```
 
 
 
@@ -220,9 +323,14 @@ References/Resources
 
 Tidy Data:
 - http://vita.had.co.nz/papers/tidy-data.pdf
+- https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html
+- http://blog.rstudio.org/2014/07/22/introducing-tidyr/
+- https://ramnathv.github.io/pycon2014-r/explore/tidy.html
 
 Data Wrangling:
 - https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+- https://cran.r-project.org/web/packages/dplyr/vignettes/introduction.html
+- 
 - other things
 
 For making this presentation (R Presentation / Rstudio):  

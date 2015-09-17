@@ -102,14 +102,14 @@ Messy Data: Problem 1
 
 This can be helpful when displaying data, but isn't great for analyses.
 
-Here, the taxa along the top are technically *values*, not variables.
+Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not variables.
 
 
 ```
   vegplot altM T1 G1 H2 H3
-1   S1T1A  100  0  0  0  0
-2   S1T1B  200  1  0  1  1
-3   S1T1C  300  0  0  1  0
+1   S1T1A  100  1  1  1  0
+2   S1T1B  200  1  1  1  0
+3   S1T1C  300  0  1  1  0
 ```
 
 
@@ -117,15 +117,17 @@ Here, the taxa along the top are technically *values*, not variables.
 Messy Data: Fix 1
 ========================================================
 
-- pull species from headings into a column we're calling "taxa"
+- pull species from headings into a column we're calling "taxon"
 - 'gather' values under each heading into a column we've called "presence"
 - don't gather site codes or altitude! (use minus symbol)
 
 
 ```r
+datA <- 
 datA %>% 
-  gather(taxa, presence, -vegplot, -altM) %>%
-  head   # only show first 6 rows
+  gather(taxon, presence, -vegplot, -altM) %>%
+  head %>%  # only show first 6 rows
+print
 ```
 
 
@@ -133,19 +135,19 @@ datA %>%
 Messy Data: Fix 1
 ========================================================
 
-- pull species from headings into a column we're calling "taxa"
+- pull species from headings into a column we're calling "taxon"
 - **'gather'** values under each heading into a column we've called "presence"
 - don't gather site codes or altitude! (use minus symbol)
 
 
 ```
-  vegplot altM taxa presence
-1   S1T1A  100   T1        0
-2   S1T1B  200   T1        1
-3   S1T1C  300   T1        0
-4   S1T1A  100   G1        0
-5   S1T1B  200   G1        0
-6   S1T1C  300   G1        0
+  vegplot altM taxon presence
+1   S1T1A  100    T1        1
+2   S1T1B  200    T1        1
+3   S1T1C  300    T1        0
+4   S1T1A  100    G1        1
+5   S1T1B  200    G1        1
+6   S1T1C  300    G1        1
 ```
 
 
@@ -167,6 +169,9 @@ We'll need to split these up if we want to compare things like species by site.
 [1,] "S1T1A"
 [2,] "S1T1B"
 [3,] "S1T1C"
+[4,] "S1T1A"
+[5,] "S1T1B"
+[6,] "S1T1C"
 ```
 
 
@@ -178,18 +183,20 @@ Messy Data: Fix 2
 
 
 ```r
+datA <- 
 datA %>% 
   separate(
           # column to split
           vegplot, 
           # new column names
           into=c("site", "transect", "releve"), 
-          # separator: numeric => split position
+          # numeric/position separator
           sep=c(2, 4), 
           # remove old vegplot column
           remove=TRUE  
           ) %>%
-  head   # only show first 6 rows
+  head %>%   # only show first 6 rows
+print
 ```
 
 
@@ -201,43 +208,143 @@ Messy Data: Fix 2
 
 
 ```
-  site transect releve altM T1 G1 H2 H3
-1   S1       T1      A  100  0  0  0  0
-2   S1       T1      B  200  1  0  1  1
-3   S1       T1      C  300  0  0  1  0
+  site transect releve altM taxon presence
+1   S1       T1      A  100    T1        1
+2   S1       T1      B  200    T1        1
+3   S1       T1      C  300    T1        0
+4   S1       T1      A  100    G1        1
+5   S1       T1      B  200    G1        1
+6   S1       T1      C  300    G1        1
 ```
 
 
 
-
-
-
-
-
-Slide With Plot
+Messy Data: Problem 3
 ========================================================
 
-![plot of chunk unnamed-chunk-9](R_DataWrangling-figure/unnamed-chunk-9-1.png) 
-   
+3) Variables in both rows and columns
 
-
-Slide Which doesn't show title
-========================================================
-title: false
-
-This slide doesn't show it's title and continues from the rest
+TBC
 
 
 
-References/Resources
+
+
+Messy Data: Fix 3
 ========================================================
 
-Tidy Data:
-- http://vita.had.co.nz/papers/tidy-data.pdf
+- TBC
 
-Data Wrangling:
-- https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
-- other things
+TBC
 
-For making this presentation (R Presentation / Rstudio):  
-- https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations)
+
+
+
+
+Messy Data: Problem 4
+========================================================
+
+4) Multiple types of observational units are stored in the same table
+
+Here, we had elevational data (altM) and species data (taxon, presence) stored in the same table.  That's not tidy data!   
+
+Splitting these 'types' of data apart is called 'normalisation' & is done in relational databases
+
+
+```
+  site transect releve altM taxon presence
+1   S1       T1      A  100    T1        1
+2   S1       T1      B  200    T1        1
+3   S1       T1      C  300    T1        0
+4   S1       T1      A  100    G1        1
+5   S1       T1      B  200    G1        1
+6   S1       T1      C  300    G1        1
+```
+
+
+
+Messy Data: Fix 4
+========================================================
+
+Split elevation data (altM) amd species data (taxon, presence) off into separate tables.
+
+```r
+# environmental data  
+envDat <- 
+   datA %>% 
+      select(site, transect, releve, altM) %>%
+print
+```
+
+```
+  site transect releve altM
+1   S1       T1      A  100
+2   S1       T1      B  200
+3   S1       T1      C  300
+4   S1       T1      A  100
+5   S1       T1      B  200
+6   S1       T1      C  300
+```
+
+
+
+Messy Data: Fix 4
+========================================================
+
+Split elevation data (altM) amd species data (taxon, presence) off into separate tables.
+
+```r
+# species data
+spsDat <- 
+   datA %>%
+      select(site, transect, releve, taxon, presence) %>%
+print
+```
+
+```
+  site transect releve taxon presence
+1   S1       T1      A    T1        1
+2   S1       T1      B    T1        1
+3   S1       T1      C    T1        0
+4   S1       T1      A    G1        1
+5   S1       T1      B    G1        1
+6   S1       T1      C    G1        1
+```
+
+
+Messy Data: Problem 5
+========================================================
+
+5) A single observational unit is stored in multiple tables
+
+Sometimes we'll accumulate several files which are often the same type of observation. 
+
+For instance, temperature data from a logger split into separate files by time (Sept2015.csv, Oct2015.csv, etc). 
+
+
+
+
+
+Messy Data: Fix 5
+========================================================
+
+- TBC
+
+TBC
+
+
+
+
+
+
+Now What?
+========================================================
+
+Now your data is tidy, it's far easier to analyse, plot & share!
+
+
+
+
+```
+Error in plot.window(...) : need finite 'xlim' values
+```

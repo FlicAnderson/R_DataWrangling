@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Data Wrangling in R</title>
+  <title>Data Wrangling & Tidy Data in R</title>
     
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -784,8 +784,8 @@ hljs.initHighlightingOnLoad();
   <div class="reveal">
   <div class="slides">
 
-<section data-state="section" data-transition="zoom" data-transition-speed="slow">
-<h1>Data Wrangling in R</h1><p>Flic Anderson<br/>29 September 2015</p>
+<section data-state="section" data-transition="linear" data-transition-speed="default">
+<h1>Data Wrangling &amp; Tidy Data in R</h1><p>Flic Anderson<br/>29 September 2015</p>
 
 <div class="slideContent" >
 <p>RBGE Code Group </p>
@@ -793,22 +793,55 @@ hljs.initHighlightingOnLoad();
 </div>
 
 </section>
-<section data-transition="fade" data-transition-speed="slow">
+<section data-transition="linear" data-transition-speed="default">
 <h3>What IS Data Wrangling?!</h3>
 <div class="slideContent" >
-<p>For more details on authoring R presentations click the
-<strong>Help</strong> button on the toolbar.</p>
+<p>The process of cleaning, transforming and generally converting raw data into a form which allows easier use later.</p>
+
+<p>For reproducible science, this is best done programmatically.  </p>
+
+<p>R is great for this &amp; there are a few great packages which make life much easier (Dplyr, Tidyr, reshape, etc)  </p>
+
+<p>If you work with data, you probably do a lot of data wrangling - congrats! </p>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>What IS Tidy Data?!</h3>
+<div class="slideContent" >
+<p>Tidy data is a subset of data wrangling.</p>
+
+<p>The aim is to get your untidy raw data into a structure which allows easy analysis</p>
+
+<p>3 principles:</p>
 
 <ul>
-<li>Bullet 1</li>
-<li>Bullet 2</li>
-<li>Bullet 3</li>
+<li>Each variable forms a column</li>
+<li>Each observation forms a row</li>
+<li>Each type of observational unit forms a table</li>
 </ul>
 
 </div>
 
 </section>
-<section data-transition="linear" data-transition-speed="slow">
+<section data-transition="linear" data-transition-speed="default">
+<h3>Common Messy Data Issues</h3>
+<div class="slideContent" >
+<p>Your data might be messy, if:</p>
+
+<ul>
+<li>1) Column headings are values, not variable names </li>
+<li>2) Multiple variables are stored in one column</li>
+<li>3) Variables in both rows and columns</li>
+<li>4) Multiple types of observational units are stored in the same table</li>
+<li>5) A single observational unit is stored in multiple tables</li>
+</ul>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
 <h3>Let&#x27;s Go!</h3>
 <div class="slideContent" >
 <p>Install &amp; load packages we&#39;ll work with:</p>
@@ -831,43 +864,279 @@ if (!require(tidyr)){
 </div>
 
 </section>
-<section data-transition="zoom" data-transition-speed="slow">
-<h3>Slide With Plot</h3>
-<div class="mediaOnly slideContent" >
-<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-2"/> </p>
-
-</div>
-
-</section>
-<section data-transition="zoom" data-transition-speed="slow">
-
-<div class="slideContent noTitle" >
-<p>This slide doesn&#39;t show it&#39;s title and continues from the rest</p>
-
-</div>
-
-</section>
-<section data-transition="zoom" data-transition-speed="slow">
-<h3>References&#x2F;Resources</h3>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Example Data Set: datA</h3>
 <div class="slideContent" >
-<p>Tidy Data:</p>
+<p>This is <strong>randomly generated</strong> botanical survey data, based on my MSc project data</p>
 
+<pre><code class="r"># data frame: 
+datA &lt;- data.frame(
+        # sampling site codes
+        vegplot=c(&quot;S1T1A&quot;, &quot;S1T1B&quot;, &quot;S1T1C&quot;),  
+        # elevation of sample
+        altM=c(100, 200, 300), 
+        # presence values for taxa
+        T1=sample(0:1, 3, replace=TRUE),  
+        G1=sample(0:1, 3, replace=TRUE),  
+        H2=sample(0:1, 3, replace=TRUE),  
+        H3=sample(0:1, 3, replace=TRUE)
+)
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Problem 1</h3>
+<div class="slideContent" >
+<p>1) Column headings are values, not variable names</p>
+
+<p>This can be helpful when displaying data, but isn&#39;t great for analyses.</p>
+
+<p>Here, the taxa (T1, G1, H2 etc) along the top are technically <em>values</em>, not variables.</p>
+
+<pre><code>  vegplot altM T1 G1 H2 H3
+1   S1T1A  100  1  1  1  0
+2   S1T1B  200  1  1  1  0
+3   S1T1C  300  0  1  1  0
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 1</h3>
+<div class="slideContent" >
 <ul>
-<li><a href="http://vita.had.co.nz/papers/tidy-data.pdf">http://vita.had.co.nz/papers/tidy-data.pdf</a></li>
+<li>pull species from headings into a column we&#39;re calling &ldquo;taxon&rdquo;</li>
+<li>&#39;gather&#39; values under each heading into a column we&#39;ve called &ldquo;presence&rdquo;</li>
+<li>don&#39;t gather site codes or altitude! (use minus symbol)</li>
 </ul>
 
-<p>Data Wrangling:</p>
+<pre><code class="r">datA &lt;- 
+datA %&gt;% 
+  gather(taxon, presence, -vegplot, -altM) %&gt;%
+  head %&gt;%  # only show first 6 rows
+print
+</code></pre>
 
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 1</h3>
+<div class="slideContent" >
 <ul>
-<li><a href="https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf">https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf</a></li>
-<li>other things</li>
+<li>pull species from headings into a column we&#39;re calling &ldquo;taxon&rdquo;</li>
+<li><strong>&#39;gather&#39;</strong> values under each heading into a column we&#39;ve called &ldquo;presence&rdquo;</li>
+<li>don&#39;t gather site codes or altitude! (use minus symbol)</li>
 </ul>
 
-<p>For making this presentation (R Presentation / Rstudio):  </p>
+<pre><code>  vegplot altM taxon presence
+1   S1T1A  100    T1        1
+2   S1T1B  200    T1        1
+3   S1T1C  300    T1        0
+4   S1T1A  100    G1        1
+5   S1T1B  200    G1        1
+6   S1T1C  300    G1        1
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Problem 2</h3>
+<div class="slideContent" >
+<p>2) Multiple variables are stored in one column</p>
+
+<p>The vegplots variable is made up of a code for each sampling point &amp; represents multiple variables:</p>
 
 <ul>
-<li><a href="https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations">https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations</a>)</li>
+<li>S1 = site 1 [1:3]</li>
+<li>T1 = transect 1  [1:5] (replicates!)</li>
+<li>A = releve A  [A:F]
+We&#39;ll need to split these up if we want to compare things like species by site.</li>
 </ul>
+
+<pre><code>     [,1]   
+[1,] &quot;S1T1A&quot;
+[2,] &quot;S1T1B&quot;
+[3,] &quot;S1T1C&quot;
+[4,] &quot;S1T1A&quot;
+[5,] &quot;S1T1B&quot;
+[6,] &quot;S1T1C&quot;
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 2</h3>
+<div class="slideContent" >
+<ul>
+<li>we separate site, transect &amp; releve data into columns of their own</li>
+</ul>
+
+<pre><code class="r">datA &lt;- 
+datA %&gt;% 
+  separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c(&quot;site&quot;, &quot;transect&quot;, &quot;releve&quot;), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %&gt;%
+  head %&gt;%   # only show first 6 rows
+print
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 2</h3>
+<div class="slideContent" >
+<ul>
+<li>we separate site, transect &amp; releve data into columns of their own</li>
+</ul>
+
+<pre><code>  site transect releve altM taxon presence
+1   S1       T1      A  100    T1        1
+2   S1       T1      B  200    T1        1
+3   S1       T1      C  300    T1        0
+4   S1       T1      A  100    G1        1
+5   S1       T1      B  200    G1        1
+6   S1       T1      C  300    G1        1
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Problem 3</h3>
+<div class="slideContent" >
+<p>3) Variables in both rows and columns</p>
+
+<p>TBC</p>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 3</h3>
+<div class="slideContent" >
+<ul>
+<li>TBC</li>
+</ul>
+
+<p>TBC</p>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Problem 4</h3>
+<div class="slideContent" >
+<p>4) Multiple types of observational units are stored in the same table</p>
+
+<p>Here, we had elevational data (altM) and species data (taxon, presence) stored in the same table.  That&#39;s not tidy data!   </p>
+
+<p>Splitting these &#39;types&#39; of data apart is called &#39;normalisation&#39; &amp; is done in relational databases</p>
+
+<pre><code>  site transect releve altM taxon presence
+1   S1       T1      A  100    T1        1
+2   S1       T1      B  200    T1        1
+3   S1       T1      C  300    T1        0
+4   S1       T1      A  100    G1        1
+5   S1       T1      B  200    G1        1
+6   S1       T1      C  300    G1        1
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 4</h3>
+<div class="slideContent" >
+<p>Split elevation data (altM) amd species data (taxon, presence) off into separate tables.</p>
+
+<pre><code class="r"># environmental data  
+envDat &lt;- 
+   datA %&gt;% 
+      select(site, transect, releve, altM) %&gt;%
+print
+</code></pre>
+
+<pre><code>  site transect releve altM
+1   S1       T1      A  100
+2   S1       T1      B  200
+3   S1       T1      C  300
+4   S1       T1      A  100
+5   S1       T1      B  200
+6   S1       T1      C  300
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 4</h3>
+<div class="slideContent" >
+<p>Split elevation data (altM) amd species data (taxon, presence) off into separate tables.</p>
+
+<pre><code class="r"># species data
+spsDat &lt;- 
+   datA %&gt;%
+      select(site, transect, releve, taxon, presence) %&gt;%
+print
+</code></pre>
+
+<pre><code>  site transect releve taxon presence
+1   S1       T1      A    T1        1
+2   S1       T1      B    T1        1
+3   S1       T1      C    T1        0
+4   S1       T1      A    G1        1
+5   S1       T1      B    G1        1
+6   S1       T1      C    G1        1
+</code></pre>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Problem 5</h3>
+<div class="slideContent" >
+<p>5) A single observational unit is stored in multiple tables</p>
+
+<p>Sometimes we&#39;ll accumulate several files which are often the same type of observation. </p>
+
+<p>For instance, temperature data from a logger split into separate files by time (Sept2015.csv, Oct2015.csv, etc). </p>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Messy Data: Fix 5</h3>
+<div class="slideContent" >
+<ul>
+<li>TBC</li>
+</ul>
+
+<p>TBC</p>
+
+</div>
+
+</section>
+<section data-transition="linear" data-transition-speed="default">
+<h3>Now What?</h3>
+<div class="slideContent" >
+<p>Now your data is tidy, it&#39;s far easier to analyse, plot &amp; share!</p>
+
+<pre><code>Error in plot.window(...) : need finite &#39;xlim&#39; values
+</code></pre>
 
 </div>
 
@@ -923,8 +1192,8 @@ function commandsForSlide(indexh) {
       rollingLinks: false,
       
       theme: 'simple', 
-      transition: 'zoom',
-      transitionSpeed: 'slow',
+      transition: 'linear',
+      transitionSpeed: 'default',
       rtl: false,
       width: 960,
       height: 700,

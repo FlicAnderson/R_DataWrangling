@@ -74,7 +74,7 @@ if (!require(tidyr)){
 
 A Brief Intro to the Hadleyverse
 ==========================================================
-![alt text](hadleyverse.png)
+![CRAN Network Structure - via https://github.com/andrie/cran-network-structure](hadleyverse.png)
 
 
 
@@ -135,9 +135,9 @@ Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not vari
 
 ```
   vegplot altM T1 G1 H2 H3
-1   S1T1A  100  1  0  1  0
-2   S1T1B  200  1  0  1  0
-3   S1T1C  300  0  0  1  0
+1   S1T1A  100  0  1  0  1
+2   S1T1B  200  1  1  0  0
+3   S1T1C  300  1  1  0  0
 ```
 
 
@@ -170,12 +170,12 @@ Messy Data: Fix 1
 
 ```
   vegplot altM taxon presence
-1   S1T1A  100    T1        1
+1   S1T1A  100    T1        0
 2   S1T1B  200    T1        1
-3   S1T1C  300    T1        0
-4   S1T1A  100    G1        0
-5   S1T1B  200    G1        0
-6   S1T1C  300    G1        0
+3   S1T1C  300    T1        1
+4   S1T1A  100    G1        1
+5   S1T1B  200    G1        1
+6   S1T1C  300    G1        1
 ```
 
 
@@ -237,12 +237,12 @@ Messy Data: Fix 2
 
 ```
   site transect releve altM taxon presence
-1   S1       T1      A  100    T1        1
+1   S1       T1      A  100    T1        0
 2   S1       T1      B  200    T1        1
-3   S1       T1      C  300    T1        0
-4   S1       T1      A  100    G1        0
-5   S1       T1      B  200    G1        0
-6   S1       T1      C  300    G1        0
+3   S1       T1      C  300    T1        1
+4   S1       T1      A  100    G1        1
+5   S1       T1      B  200    G1        1
+6   S1       T1      C  300    G1        1
 ```
 
 
@@ -281,12 +281,12 @@ Splitting these 'types' of data apart is called 'normalisation' & is done in rel
 
 ```
   site transect releve altM taxon presence
-1   S1       T1      A  100    T1        1
+1   S1       T1      A  100    T1        0
 2   S1       T1      B  200    T1        1
-3   S1       T1      C  300    T1        0
-4   S1       T1      A  100    G1        0
-5   S1       T1      B  200    G1        0
-6   S1       T1      C  300    G1        0
+3   S1       T1      C  300    T1        1
+4   S1       T1      A  100    G1        1
+5   S1       T1      B  200    G1        1
+6   S1       T1      C  300    G1        1
 ```
 
 
@@ -331,12 +331,12 @@ print
 
 ```
   site transect releve taxon presence
-1   S1       T1      A    T1        1
+1   S1       T1      A    T1        0
 2   S1       T1      B    T1        1
-3   S1       T1      C    T1        0
-4   S1       T1      A    G1        0
-5   S1       T1      B    G1        0
-6   S1       T1      C    G1        0
+3   S1       T1      C    T1        1
+4   S1       T1      A    G1        1
+5   S1       T1      B    G1        1
+6   S1       T1      C    G1        1
 ```
 
 
@@ -371,8 +371,27 @@ Now What?
 Now your data is tidy, it's far easier to analyse, plot & share!
 
 
+```r
+#plot(spsDat)
+```
 
 
-```
-Error in plot.window(...) : need finite 'xlim' values
-```
+
+References/Resources
+========================================================
+
+Tidy Data:
+- http://vita.had.co.nz/papers/tidy-data.pdf
+- https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html
+- http://blog.rstudio.org/2014/07/22/introducing-tidyr/
+- https://ramnathv.github.io/pycon2014-r/explore/tidy.html
+
+Data Wrangling:
+- https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+- https://cran.r-project.org/web/packages/dplyr/vignettes/introduction.html
+- 
+- other things
+
+For making this presentation (R Presentation / Rstudio):  
+- https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations)
+- https://github.com/andrie/cran-network-structure

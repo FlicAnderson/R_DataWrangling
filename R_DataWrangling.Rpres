@@ -74,7 +74,7 @@ if (!require(tidyr)){
 
 A Brief Intro to the Hadleyverse
 ==========================================================
-![alt text](hadleyverse.png)
+![CRAN Network Structure - via https://github.com/andrie/cran-network-structure](hadleyverse.png)
 
 
 
@@ -341,7 +341,7 @@ Now What?
 Now your data is tidy, it's far easier to analyse, plot & share!
 
 ```{r, eval=TRUE}
-plot(spsDat)
+#plot(spsDat)
 ```
 
 
@@ -363,3 +363,4 @@ Data Wrangling:
 
 For making this presentation (R Presentation / Rstudio):  
 - https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations)
+- https://github.com/andrie/cran-network-structure

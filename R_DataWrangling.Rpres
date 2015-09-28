@@ -5,8 +5,9 @@ date: 29 September 2015
 font-import: http://fonts.googleapis.com/css?family=Telex
 font-family: 'Telex'
 
-RBGE Code Group 
-This presentation at: https://github.com/FlicAnderson/R_DataWrangling
+RBGE Code Group    
+This presentation at: https://github.com/FlicAnderson/R_DataWrangling    
+GitHub: @FlicAnderson
 
 
 
@@ -75,11 +76,11 @@ if (!require(tidyr)){
 A Brief Intro to {dplyr}
 ==========================================================
 
-The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...
+The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...   
 
 Hadley Wickham's packages tend to have a particular grammar which is easy to use & quick to learn.
 
-{dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.
+{dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.  
 
 
 
@@ -96,10 +97,10 @@ datA <- data.frame(
         # elevation of sample
         altM=c(100, 200, 300), 
         # presence values for taxa
-        T1=sample(0:1, 3, replace=TRUE),  
-        G1=sample(0:1, 3, replace=TRUE),  
-        H1=sample(0:1, 3, replace=TRUE),  
-        H2=sample(0:1, 3, replace=TRUE)
+        Tr1=sample(0:1, 3, replace=TRUE),  
+        Gr1=sample(0:1, 3, replace=TRUE),  
+        Hr1=sample(0:1, 3, replace=TRUE),  
+        Hr2=sample(0:1, 3, replace=TRUE)
 )
 ```
 
@@ -112,7 +113,7 @@ Messy Data: Problem 1
 
 This can be helpful when displaying data, but isn't great for analyses.
 
-Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not variables.
+Here, the taxa (Tr1, Gr1, He2 etc) along the top are technically *values*, not variables.
 
 ```{r, echo=FALSE}
 datA
@@ -219,25 +220,22 @@ print
 
 
 
-Messy Data: Problem 3
+Example Data Set: treeData
 ========================================================
 
-3) Variables in both rows and columns
-
-Here we've got some coppice & grazing data from a releve.
+This is **fictional** botanical survey data, based on my MSc project data.  
+Yes, I did end up with this shambles of a table... I hadn't thought out my headings before I started measuring!
 
 ```{r, eval=FALSE}
 treeData <- data.frame(
-        #site
-        site=c("S1", "S1", "S1"), 
-        #transect
-        trnsct=c("T1", "T1", "T1"), 
-        # releve
-        releve=c("A", "A", "A"), 
-        # nearest 3 trees:
-        near1=c("oak", "non-cop", "graz"),
-        near2=c("pear", NA, "no-graz"),
-        near3=c("oak", "yng-cop", "no-graz")
+   #vegplot
+   site=c("S1T1A", "S1T1A", "S1T1B", "S1T1B"), 
+   # measure
+   measured=c("sps", "cop", "sps", "cop"),
+   # nearest 3 trees
+   near1=c("oak", "non-cop", "oak", "old-cop"),
+   near2=c("pear", NA, "oak", "yng-cop"),
+   near3=c("oak", "yng-cop", "prunus", NA)
 )
 ```
 
@@ -248,36 +246,29 @@ Messy Data: Problem 3
 
 3) Variables in both rows and columns
 
-The 3 nearest trees (near1, near2 & near3) were surveyed for:
+At the 2 sites shown, the 3 nearest trees (near1, near2 & near3) were surveyed for:
 - species (oak, pear, etc)
 - if oak: evidence of coppice & age of coppicing if evidence found
-- evidence of grazing (graz = yes, no-graz = no)
 
 ```{r, echo=FALSE}
 treeData <- data.frame(
-        #site
-        site=c("S1", "S1", "S1"), 
-        #transect
-        trnsct=c("T1", "T1", "T1"), 
-        # releve
-        releve=c("A", "A", "A"), 
+        #vegplot
+        vegplot=c("S1T1A", "S1T1A", "S1T1B", "S1T1B"), 
+        # measure
+        measured=c("sps", "cop", "sps", "cop"),
         # nearest 3 trees
-        near1=c("oak", "non-cop", "graz"),
-        near2=c("pear", NA, "no-graz"),
-        near3=c("oak", "yng-cop", "no-graz")
+        near1=c("oak", "non-cop", "oak", "old-cop"),
+        near2=c("pear", NA, "oak", "yng-cop"),
+        near3=c("oak", "yng-cop", "plum", NA)
 )
 treeData
-
-sps <- factor("oak", "pear")
-coppice <- factor("non-cop", "yng-cop")
-grazing <- factor("graz", "no-graz")
 ```
 
 
 Messy Data: Fix 3
 ========================================================
 
-Step 1: gather the columns near1 - near3 into a new variable called "tree" using the gather( ) function from the {tidyr} package
+Step 1: gather columns near1 - near3 into new variable "tree" using gather( ) function from the {tidyr} package
 
 ```{r, eval=FALSE}
 treeData <- 
@@ -299,7 +290,7 @@ treeData <-
 Messy Data: Fix 3
 ========================================================
 
-Step 1: gather the columns near1 - near3 into a new variable called "tree" using the gather( ) function from the {tidyr} package
+Step 1: gather columns near1 - near3 into new variable "tree" using gather( ) function from the {tidyr} package
 
 ```{r, echo=FALSE}
 treeData <- 
@@ -321,25 +312,83 @@ treeData <-
 Messy Data: Fix 3
 ========================================================
 
-Step 2: now we need to spread the 'collInfo' which still contains data on 3 separate kinds of variable (species, coppicing & grazing) into separate columns using the spread( ) function from the {tidyr} package
+Step 2: now spread 'collInfo' which contains data on 2 separate variables (species, coppicing) into separate columns using spread( ) function from the {tidyr} package
 
-The spread( ) function spreads key-value pairs across multiple columns.
+```{r, eval=FALSE}
+treeData <-
+   treeData %>% 
+      # spread 'measured' column as new columns
+      # fill with contents of 'collInfo' column
+      spread(measured, collInfo) %>%
+      # extract numerics from 'near1' etc
+      mutate(tree=extract_numeric(tree)) %>%
+   print
+```
+
+
+
+Messy Data: Fix 3
+========================================================
+
+Step 2: now spread 'collInfo' which contains data on 2 separate variables (species, coppicing) into separate columns using spread( ) function from the {tidyr} package
 
 ```{r, echo=FALSE}
-treeData <- 
+treeData <-
    treeData %>% 
-     gather(
-     # gather near1:near3 into new column "tree"
-             tree, 
-     # dump info into new column "collInfo"
-             collInfo, 
-     # specify columns - near1: near3
-             near1:near3, 
-     # remove NA/missing values
-             na.rm=TRUE) %>%
-     spread(collInfo, sps) %>%
+        # spread 'measured' column as new columns
+        # fill with contents of collInfo column
+        spread(measured, collInfo) %>%
+        # extract numerics from 'near1' etc
+        mutate(tree=extract_numeric(tree)) %>%
      print
 ```
+
+
+
+Messy Data: Fix 3
+========================================================
+
+Finally, we also want to fix the vegplots bit again, which we can do with the separate( ) function as before.
+
+```{r, eval=FALSE}
+   treeData %>% 
+        # separate vegplot into site, transect, releve
+        separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+     print
+```
+
+
+
+Messy Data: Fix 3
+========================================================
+
+Finally, we also want to fix the vegplots bit again, which we can do with the separate( ) function as before.
+
+```{r, echo=FALSE}
+   treeData %>% 
+        # separate vegplot into site, transect, releve
+        separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+     print
+```
+
 
 
 Messy Data: Problem 4
@@ -399,20 +448,20 @@ S2T1A <- data.frame(
         # elevation of sample
         altM=c(100, 200, 300), 
         # presence values for taxa
-        T1=sample(0:1, 3, replace=TRUE),  
-        G1=sample(0:1, 3, replace=TRUE),  
-        H1=sample(0:1, 3, replace=TRUE),  
-        H2=sample(0:1, 3, replace=TRUE)
+        Tr1=sample(0:1, 3, replace=TRUE),  
+        Gr1=sample(0:1, 3, replace=TRUE),  
+        Hr1=sample(0:1, 3, replace=TRUE),  
+        Hr2=sample(0:1, 3, replace=TRUE)
 )
 
 S2T1B <- data.frame(
         # elevation of sample
         altM=c(100, 200, 300), 
         # presence values for taxa
-        T1=sample(0:1, 3, replace=TRUE),  
-        G1=sample(0:1, 3, replace=TRUE),  
-        H1=sample(0:1, 3, replace=TRUE),  
-        H2=sample(0:1, 3, replace=TRUE)
+        Tr1=sample(0:1, 3, replace=TRUE),  
+        Gr1=sample(0:1, 3, replace=TRUE),  
+        Hr1=sample(0:1, 3, replace=TRUE),  
+        Hr2=sample(0:1, 3, replace=TRUE)
 )
 
 S2T1B <- mutate(S2T1B, vegplot="S2T1B")

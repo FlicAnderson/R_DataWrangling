@@ -5,8 +5,9 @@ date: 29 September 2015
 font-import: http://fonts.googleapis.com/css?family=Telex
 font-family: 'Telex'
 
-RBGE Code Group 
-This presentation at: https://github.com/FlicAnderson/R_DataWrangling
+RBGE Code Group    
+This presentation at: https://github.com/FlicAnderson/R_DataWrangling    
+GitHub: @FlicAnderson
 
 
 
@@ -76,11 +77,11 @@ if (!require(tidyr)){
 A Brief Intro to {dplyr}
 ==========================================================
 
-The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...
+The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...   
 
 Hadley Wickham's packages tend to have a particular grammar which is easy to use & quick to learn.
 
-{dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.
+{dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.  
 
 
 
@@ -98,10 +99,10 @@ datA <- data.frame(
         # elevation of sample
         altM=c(100, 200, 300), 
         # presence values for taxa
-        T1=sample(0:1, 3, replace=TRUE),  
-        G1=sample(0:1, 3, replace=TRUE),  
-        H1=sample(0:1, 3, replace=TRUE),  
-        H2=sample(0:1, 3, replace=TRUE)
+        Tr1=sample(0:1, 3, replace=TRUE),  
+        Gr1=sample(0:1, 3, replace=TRUE),  
+        Hr1=sample(0:1, 3, replace=TRUE),  
+        Hr2=sample(0:1, 3, replace=TRUE)
 )
 ```
 
@@ -114,14 +115,14 @@ Messy Data: Problem 1
 
 This can be helpful when displaying data, but isn't great for analyses.
 
-Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not variables.
+Here, the taxa (Tr1, Gr1, He2 etc) along the top are technically *values*, not variables.
 
 
 ```
-  vegplot altM T1 G1 H1 H2
-1   S1T1A  100  0  0  0  0
-2   S1T1B  200  1  1  1  1
-3   S1T1C  300  0  1  1  0
+  vegplot altM Tr1 Gr1 Hr1 Hr2
+1   S1T1A  100   0   1   0   1
+2   S1T1B  200   0   1   0   0
+3   S1T1C  300   0   0   1   0
 ```
 
 
@@ -154,12 +155,12 @@ Messy Data: Fix 1
 
 ```
   vegplot altM taxon presence
-1   S1T1A  100    T1        0
-2   S1T1B  200    T1        1
-3   S1T1C  300    T1        0
-4   S1T1A  100    G1        0
-5   S1T1B  200    G1        1
-6   S1T1C  300    G1        1
+1   S1T1A  100   Tr1        0
+2   S1T1B  200   Tr1        0
+3   S1T1C  300   Tr1        0
+4   S1T1A  100   Gr1        1
+5   S1T1B  200   Gr1        1
+6   S1T1C  300   Gr1        0
 ```
 
 
@@ -221,36 +222,33 @@ Messy Data: Fix 2
 
 ```
   site transect releve altM taxon presence
-1   S1       T1      A  100    T1        0
-2   S1       T1      B  200    T1        1
-3   S1       T1      C  300    T1        0
-4   S1       T1      A  100    G1        0
-5   S1       T1      B  200    G1        1
-6   S1       T1      C  300    G1        1
+1   S1       T1      A  100   Tr1        0
+2   S1       T1      B  200   Tr1        0
+3   S1       T1      C  300   Tr1        0
+4   S1       T1      A  100   Gr1        1
+5   S1       T1      B  200   Gr1        1
+6   S1       T1      C  300   Gr1        0
 ```
 
 
 
-Messy Data: Problem 3
+Example Data Set: treeData
 ========================================================
 
-3) Variables in both rows and columns
-
-Here we've got some coppice & grazing data from a releve.
+This is **fictional** botanical survey data, based on my MSc project data.  
+Yes, I did end up with this shambles of a table... I hadn't thought out my headings before I started measuring!
 
 
 ```r
 treeData <- data.frame(
-        #site
-        site=c("S1", "S1", "S1"), 
-        #transect
-        trnsct=c("T1", "T1", "T1"), 
-        # releve
-        releve=c("A", "A", "A"), 
-        # nearest 3 trees:
-        near1=c("oak", "non-cop", "graz"),
-        near2=c("pear", NA, "no-graz"),
-        near3=c("oak", "yng-cop", "no-graz")
+   #vegplot
+   site=c("S1T1A", "S1T1A", "S1T1B", "S1T1B"), 
+   # measure
+   measured=c("sps", "cop", "sps", "cop"),
+   # nearest 3 trees
+   near1=c("oak", "non-cop", "oak", "old-cop"),
+   near2=c("pear", NA, "oak", "yng-cop"),
+   near3=c("oak", "yng-cop", "prunus", NA)
 )
 ```
 
@@ -261,24 +259,24 @@ Messy Data: Problem 3
 
 3) Variables in both rows and columns
 
-The 3 nearest trees (near1, near2 & near3) were surveyed for:
+At the 2 sites shown, the 3 nearest trees (near1, near2 & near3) were surveyed for:
 - species (oak, pear, etc)
 - if oak: evidence of coppice & age of coppicing if evidence found
-- evidence of grazing (graz = yes, no-graz = no)
 
 
 ```
-  site trnsct releve   near1   near2   near3
-1   S1     T1      A     oak    pear     oak
-2   S1     T1      A non-cop    <NA> yng-cop
-3   S1     T1      A    graz no-graz no-graz
+  vegplot measured   near1   near2   near3
+1   S1T1A      sps     oak    pear     oak
+2   S1T1A      cop non-cop    <NA> yng-cop
+3   S1T1B      sps     oak     oak    plum
+4   S1T1B      cop old-cop yng-cop    <NA>
 ```
 
 
 Messy Data: Fix 3
 ========================================================
 
-Step 1: gather the columns near1 - near3 into a new variable called "tree" using the gather( ) function from the {tidyr} package
+Step 1: gather columns near1 - near3 into new variable "tree" using gather( ) function from the {tidyr} package
 
 
 ```r
@@ -301,19 +299,21 @@ treeData <-
 Messy Data: Fix 3
 ========================================================
 
-Step 1: gather the columns near1 - near3 into a new variable called "tree" using the gather( ) function from the {tidyr} package
+Step 1: gather columns near1 - near3 into new variable "tree" using gather( ) function from the {tidyr} package
 
 
 ```
-  site trnsct releve  tree collInfo
-1   S1     T1      A near1      oak
-2   S1     T1      A near1  non-cop
-3   S1     T1      A near1     graz
-4   S1     T1      A near2     pear
-5   S1     T1      A near2  no-graz
-6   S1     T1      A near3      oak
-7   S1     T1      A near3  yng-cop
-8   S1     T1      A near3  no-graz
+   vegplot measured  tree collInfo
+1    S1T1A      sps near1      oak
+2    S1T1A      cop near1  non-cop
+3    S1T1B      sps near1      oak
+4    S1T1B      cop near1  old-cop
+5    S1T1A      sps near2     pear
+6    S1T1B      sps near2      oak
+7    S1T1B      cop near2  yng-cop
+8    S1T1A      sps near3      oak
+9    S1T1A      cop near3  yng-cop
+10   S1T1B      sps near3     plum
 ```
 
 
@@ -321,31 +321,323 @@ Step 1: gather the columns near1 - near3 into a new variable called "tree" using
 Messy Data: Fix 3
 ========================================================
 
-Step 2: now we need to spread the 'collInfo' which still contains data on 3 separate kinds of variable (species, coppicing & grazing) into separate columns using the spread( ) function from the {tidyr} package
-
-The spread( ) function spreads key-value pairs across multiple columns.
+Step 2: now spread 'collInfo' which contains data on 2 separate variables (species, coppicing) into separate columns using spread( ) function from the {tidyr} package
 
 
-
-
-
-
-
-
-
-
-
-
+```r
+treeData <-
+   treeData %>% 
+      # spread 'measured' column as new columns
+      # fill with contents of 'collInfo' column
+      spread(measured, collInfo) %>%
+      # extract numerics from 'near1' etc
+      mutate(tree=extract_numeric(tree)) %>%
+   print
+```
 
 
 
+Messy Data: Fix 3
+========================================================
 
-
-
-
-
+Step 2: now spread 'collInfo' which contains data on 2 separate variables (species, coppicing) into separate columns using spread( ) function from the {tidyr} package
 
 
 ```
-Error in eval(expr, envir, enclos) : object 'near1' not found
+  vegplot tree     cop  sps
+1   S1T1A    1 non-cop  oak
+2   S1T1A    2    <NA> pear
+3   S1T1A    3 yng-cop  oak
+4   S1T1B    1 old-cop  oak
+5   S1T1B    2 yng-cop  oak
+6   S1T1B    3    <NA> plum
 ```
+
+
+
+Messy Data: Fix 3
+========================================================
+
+Finally, we also want to fix the vegplots bit again, which we can do with the separate( ) function as before.
+
+
+```r
+   treeData %>% 
+        # separate vegplot into site, transect, releve
+        separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+     print
+```
+
+
+
+Messy Data: Fix 3
+========================================================
+
+Finally, we also want to fix the vegplots bit again, which we can do with the separate( ) function as before.
+
+
+```
+  site transect releve tree     cop  sps
+1   S1       T1      A    1 non-cop  oak
+2   S1       T1      A    2    <NA> pear
+3   S1       T1      A    3 yng-cop  oak
+4   S1       T1      B    1 old-cop  oak
+5   S1       T1      B    2 yng-cop  oak
+6   S1       T1      B    3    <NA> plum
+```
+
+
+
+Messy Data: Problem 4
+========================================================
+
+4) Multiple types of observational units are stored in the same table
+
+Here, we had elevational data (altM) and species data (taxon, presence) stored in the same table.  That's not tidy data!   
+
+Splitting these 'types' of data apart is called 'normalisation' & is done in relational databases
+
+
+```
+  site transect releve altM taxon presence
+1   S1       T1      A  100   Tr1        0
+2   S1       T1      B  200   Tr1        0
+3   S1       T1      C  300   Tr1        0
+4   S1       T1      A  100   Gr1        1
+5   S1       T1      B  200   Gr1        1
+6   S1       T1      C  300   Gr1        0
+```
+
+
+
+Messy Data: Fix 4
+========================================================
+
+Split elevation data (altM) amd species data (taxon, presence) off into separate tables.
+
+```r
+# environmental data  
+envDat <- 
+   datA %>% 
+      select(site, transect, releve, altM) %>%
+print
+```
+
+```
+  site transect releve altM
+1   S1       T1      A  100
+2   S1       T1      B  200
+3   S1       T1      C  300
+4   S1       T1      A  100
+5   S1       T1      B  200
+6   S1       T1      C  300
+```
+
+
+
+Messy Data: Fix 4
+========================================================
+
+Split elevation data (altM) amd species data (taxon, presence) off into separate tables.
+
+```r
+# species data
+spsDat <- 
+   datA %>%
+      select(site, transect, releve, taxon, presence) %>%
+print
+```
+
+```
+  site transect releve taxon presence
+1   S1       T1      A   Tr1        0
+2   S1       T1      B   Tr1        0
+3   S1       T1      C   Tr1        0
+4   S1       T1      A   Gr1        1
+5   S1       T1      B   Gr1        1
+6   S1       T1      C   Gr1        0
+```
+
+
+
+Messy Data: Problem 5
+========================================================
+
+5) A single observational unit is stored in multiple tables
+
+Sometimes we'll accumulate several files which often store the same type of observation.
+
+This can happen for various reasons, but often the names of the tables actually represent the value of a variable (eg. sampling location or date of data collection).
+
+
+
+
+
+Messy Data: Problem 5
+========================================================
+
+5) A single observational unit is stored in multiple tables
+
+Here we've got separate files from each sample location:
+
+```r
+# Site 2, Transect 1, releve A
+S2T1A
+```
+
+```
+  altM Tr1 Gr1 Hr1 Hr2
+1  100   1   0   1   0
+2  200   0   1   0   1
+3  300   1   0   1   1
+```
+
+```r
+# S2T1B has same format.
+```
+Here, the name of the table is actually the variable "vegplot".
+
+
+
+Messy Data: Fix 5
+========================================================
+
+Before joining the tables (S2T1A & S2T1B), we want to add a new column to store that name variable information.
+
+Do this using mutate() function from {dplyr}:
+
+
+```r
+# data <- mutate(data, newColumnName="value")
+S2T1A <- mutate(S2T1A, vegplot="S2T1A")
+S2T1A
+```
+
+```
+  altM Tr1 Gr1 Hr1 Hr2 vegplot
+1  100   1   0   1   0   S2T1A
+2  200   0   1   0   1   S2T1A
+3  300   1   0   1   1   S2T1A
+```
+
+
+
+Messy Data: Fix 5
+========================================================
+
+Then we use the bind_rows() function to join the tables:
+
+
+```r
+datB <- bind_rows(S2T1A, S2T1B)
+datB
+```
+
+```
+Source: local data frame [6 x 6]
+
+  altM Tr1 Gr1 Hr1 Hr2 vegplot
+1  100   1   0   1   0   S2T1A
+2  200   0   1   0   1   S2T1A
+3  300   1   0   1   1   S2T1A
+4  100   0   1   0   0   S2T1B
+5  200   0   0   1   0   S2T1B
+6  300   1   0   1   0   S2T1B
+```
+
+
+
+Messy Data: Fix 5
+========================================================
+
+Now to tidy up the next messy data problem we've ended up with: multiple variables in 1 column!
+
+
+```r
+datB <- 
+datB %>% 
+  separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+  head %>%   # only show first 6 rows
+print
+```
+
+
+
+Messy Data: Fix 5
+========================================================
+
+We've split the vegplot variable out into the site, transect and releve codes as we did before.
+
+
+```
+Source: local data frame [6 x 8]
+
+  altM Tr1 Gr1 Hr1 Hr2 site transect releve
+1  100   1   0   1   0   S2       T1      A
+2  200   0   1   0   1   S2       T1      A
+3  300   1   0   1   1   S2       T1      A
+4  100   0   1   0   0   S2       T1      B
+5  200   0   0   1   0   S2       T1      B
+6  300   1   0   1   0   S2       T1      B
+```
+
+
+
+Now What?
+========================================================
+
+Now your data is tidy, it's far easier to analyse, plot & share!
+
+Put all data tidying steps into a script & run this on the raw data each time you want to analyse it. Never change your raw data!
+
+Comment like someone you've never met will read your code - it'll help you when you come back to it later!
+
+
+
+References/Resources
+========================================================
+
+Tidy Data & Data Wrangling:
+- http://vita.had.co.nz/papers/tidy-data.pdf
+- http://blog.rstudio.org/2014/07/22/introducing-tidyr/
+- https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
+- http://www.stat.purdue.edu/~varao/STAT598Z/lect13.pdf
+- Vignettes at cran.r-project.org: dplyr & tidyr
+
+For making this presentation (R Presentation / Rstudio):  
+- https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations)
+
+
+
+Thanks!
+========================================================
+
+Anyone interested in future talk/demo on the {dplyr} package?  
+
+Would probably focus more on 5 core manipulation functions:
+
+- select( ) - subset data easily
+- filter( ) - filter rows by groupings
+- arrange( ) - reorder and arrange rows by sorting
+- mutate( ) - add new columns as functions of others
+- summarise( ) - collapse dataframe to single row
+
+- distinct( ) - not a core manipulation function, but really useful. Similar to unique( ) in base R

@@ -6,6 +6,7 @@ font-import: http://fonts.googleapis.com/css?family=Telex
 font-family: 'Telex'
 
 RBGE Code Group 
+This presentation at: https://github.com/FlicAnderson/R_DataWrangling
 
 
 
@@ -67,14 +68,7 @@ if (!require(tidyr)){
 } 
 
 # NB: for shorter/simpler code, can just use "library(dplyr)" if it's installed already.
-
 ```
-
-
-
-A Brief Intro to the Hadleyverse
-==========================================================
-![CRAN Network Structure - via https://github.com/andrie/cran-network-structure](hadleyverse.png)
 
 
 
@@ -86,17 +80,6 @@ The {dplyr} package is one of a stable of packages from the 'Hadleyverse'...
 Hadley Wickham's packages tend to have a particular grammar which is easy to use & quick to learn.
 
 {dplyr} is a good example - when the grammar *clicks*, it can really simplify your code & make it easier to read & understand.  {tidyr} uses some of the same grammar.
-
-```{r, eval=FALSE}
-datA <- data(iris)
-
-# ordinary R
-###
-
-# dplyr
-###
-
-````
 
 
 
@@ -115,8 +98,8 @@ datA <- data.frame(
         # presence values for taxa
         T1=sample(0:1, 3, replace=TRUE),  
         G1=sample(0:1, 3, replace=TRUE),  
-        H2=sample(0:1, 3, replace=TRUE),  
-        H3=sample(0:1, 3, replace=TRUE)
+        H1=sample(0:1, 3, replace=TRUE),  
+        H2=sample(0:1, 3, replace=TRUE)
 )
 ```
 
@@ -132,9 +115,7 @@ This can be helpful when displaying data, but isn't great for analyses.
 Here, the taxa (T1, G1, H2 etc) along the top are technically *values*, not variables.
 
 ```{r, echo=FALSE}
-
 datA
-
 ```
 
 
@@ -243,10 +224,74 @@ Messy Data: Problem 3
 
 3) Variables in both rows and columns
 
-TBC
+Here we've got some coppice & grazing data from a releve.
+
+```{r, eval=FALSE}
+treeData <- data.frame(
+        #site
+        site=c("S1", "S1", "S1"), 
+        #transect
+        trnsct=c("T1", "T1", "T1"), 
+        # releve
+        releve=c("A", "A", "A"), 
+        # nearest 3 trees:
+        near1=c("oak", "non-cop", "graz"),
+        near2=c("pear", NA, "no-graz"),
+        near3=c("oak", "yng-cop", "no-graz")
+)
+```
+
+
+
+Messy Data: Problem 3
+========================================================
+
+3) Variables in both rows and columns
+
+The 3 nearest trees (near1, near2 & near3) were surveyed for:
+- species (oak, pear, etc)
+- if oak: evidence of coppice & age of coppicing if evidence found
+- evidence of grazing (graz = yes, no-graz = no)
 
 ```{r, echo=FALSE}
-# TBC 
+treeData <- data.frame(
+        #site
+        site=c("S1", "S1", "S1"), 
+        #transect
+        trnsct=c("T1", "T1", "T1"), 
+        # releve
+        releve=c("A", "A", "A"), 
+        # nearest 3 trees
+        near1=c("oak", "non-cop", "graz"),
+        near2=c("pear", NA, "no-graz"),
+        near3=c("oak", "yng-cop", "no-graz")
+)
+treeData
+
+sps <- factor("oak", "pear")
+coppice <- factor("non-cop", "yng-cop")
+grazing <- factor("graz", "no-graz")
+```
+
+
+Messy Data: Fix 3
+========================================================
+
+Step 1: gather the columns near1 - near3 into a new variable called "tree" using the gather( ) function from the {tidyr} package
+
+```{r, eval=FALSE}
+treeData <- 
+   treeData %>% 
+     gather(
+     # gather near1:near3 into new column "tree"
+             tree, 
+     # dump info into new column "collInfo"
+             collInfo, 
+     # specify columns - near1: near3
+             near1:near3, 
+     # remove NA/missing values
+             na.rm=TRUE) %>%
+     print
 ```
 
 
@@ -254,14 +299,47 @@ TBC
 Messy Data: Fix 3
 ========================================================
 
-- TBC
-
-TBC
+Step 1: gather the columns near1 - near3 into a new variable called "tree" using the gather( ) function from the {tidyr} package
 
 ```{r, echo=FALSE}
-# TBC 
+treeData <- 
+   treeData %>% 
+     gather(
+     # gather near1:near3 into new column "tree"
+             tree, 
+     # dump info into new column "collInfo"
+             collInfo, 
+     # specify columns - near1: near3
+             near1:near3, 
+     # remove NA/missing values
+             na.rm=TRUE) %>%
+     print
 ```
 
+
+
+Messy Data: Fix 3
+========================================================
+
+Step 2: now we need to spread the 'collInfo' which still contains data on 3 separate kinds of variable (species, coppicing & grazing) into separate columns using the spread( ) function from the {tidyr} package
+
+The spread( ) function spreads key-value pairs across multiple columns.
+
+```{r, echo=FALSE}
+treeData <- 
+   treeData %>% 
+     gather(
+     # gather near1:near3 into new column "tree"
+             tree, 
+     # dump info into new column "collInfo"
+             collInfo, 
+     # specify columns - near1: near3
+             near1:near3, 
+     # remove NA/missing values
+             na.rm=TRUE) %>%
+     spread(collInfo, sps) %>%
+     print
+```
 
 
 Messy Data: Problem 4
@@ -306,17 +384,69 @@ print
 ```
 
 
+
 Messy Data: Problem 5
 ========================================================
 
 5) A single observational unit is stored in multiple tables
 
-Sometimes we'll accumulate several files which are often the same type of observation. 
+Sometimes we'll accumulate several files which often store the same type of observation.
 
-For instance, temperature data from a logger split into separate files by time (Sept2015.csv, Oct2015.csv, etc). 
+This can happen for various reasons, but often the names of the tables actually represent the value of a variable (eg. sampling location or date of data collection).
 
 ```{r, echo=FALSE}
-# TBC 
+S2T1A <- data.frame(
+        # elevation of sample
+        altM=c(100, 200, 300), 
+        # presence values for taxa
+        T1=sample(0:1, 3, replace=TRUE),  
+        G1=sample(0:1, 3, replace=TRUE),  
+        H1=sample(0:1, 3, replace=TRUE),  
+        H2=sample(0:1, 3, replace=TRUE)
+)
+
+S2T1B <- data.frame(
+        # elevation of sample
+        altM=c(100, 200, 300), 
+        # presence values for taxa
+        T1=sample(0:1, 3, replace=TRUE),  
+        G1=sample(0:1, 3, replace=TRUE),  
+        H1=sample(0:1, 3, replace=TRUE),  
+        H2=sample(0:1, 3, replace=TRUE)
+)
+
+S2T1B <- mutate(S2T1B, vegplot="S2T1B")
+```
+
+
+
+Messy Data: Problem 5
+========================================================
+
+5) A single observational unit is stored in multiple tables
+
+Here we've got separate files from each sample location:
+```{r, eval=TRUE}
+# Site 2, Transect 1, releve A
+S2T1A
+
+# S2T1B has same format.
+```
+Here, the name of the table is actually the variable "vegplot".
+
+
+
+Messy Data: Fix 5
+========================================================
+
+Before joining the tables (S2T1A & S2T1B), we want to add a new column to store that name variable information.
+
+Do this using mutate() function from {dplyr}:
+
+```{r, eval=TRUE}
+# data <- mutate(data, newColumnName="value")
+S2T1A <- mutate(S2T1A, vegplot="S2T1A")
+S2T1A
 ```
 
 
@@ -324,14 +454,60 @@ For instance, temperature data from a logger split into separate files by time (
 Messy Data: Fix 5
 ========================================================
 
-- TBC
+Then we use the bind_rows() function to join the tables:
 
-TBC
-
-```{r, echo=FALSE}
-# TBC 
+```{r, eval=TRUE}
+datB <- bind_rows(S2T1A, S2T1B)
+datB
 ```
 
+
+
+Messy Data: Fix 5
+========================================================
+
+Now to tidy up the next messy data problem we've ended up with: multiple variables in 1 column!
+
+```{r, eval=FALSE}
+datB <- 
+datB %>% 
+  separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+  head %>%   # only show first 6 rows
+print
+```
+
+
+
+Messy Data: Fix 5
+========================================================
+
+We've split the vegplot variable out into the site, transect and releve codes as we did before.
+
+```{r, echo=FALSE}
+datB <- 
+datB %>% 
+  separate(
+          # column to split
+          vegplot, 
+          # new column names
+          into=c("site", "transect", "releve"), 
+          # numeric/position separator
+          sep=c(2, 4), 
+          # remove old vegplot column
+          remove=TRUE  
+          ) %>%
+  head %>%   # only show first 6 rows
+print
+```
 
 
 
@@ -340,27 +516,38 @@ Now What?
 
 Now your data is tidy, it's far easier to analyse, plot & share!
 
-```{r, eval=TRUE}
-#plot(spsDat)
-```
+Put all data tidying steps into a script & run this on the raw data each time you want to analyse it. Never change your raw data!
+
+Comment like someone you've never met will read your code - it'll help you when you come back to it later!
 
 
 
 References/Resources
 ========================================================
 
-Tidy Data:
+Tidy Data & Data Wrangling:
 - http://vita.had.co.nz/papers/tidy-data.pdf
-- https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html
 - http://blog.rstudio.org/2014/07/22/introducing-tidyr/
-- https://ramnathv.github.io/pycon2014-r/explore/tidy.html
-
-Data Wrangling:
 - https://www.rstudio.com/wp-content/uploads/2015/02/data-wrangling-cheatsheet.pdf
-- https://cran.r-project.org/web/packages/dplyr/vignettes/introduction.html
-- 
-- other things
+- http://www.stat.purdue.edu/~varao/STAT598Z/lect13.pdf
+- Vignettes at cran.r-project.org: dplyr & tidyr
 
 For making this presentation (R Presentation / Rstudio):  
 - https://support.rstudio.com/hc/en-us/articles/200486468-Authoring-R-Presentations)
-- https://github.com/andrie/cran-network-structure
+
+
+
+Thanks!
+========================================================
+
+Anyone interested in future talk/demo on the {dplyr} package?  
+
+Would probably focus more on 5 core manipulation functions:
+
+- select( ) - subset data easily
+- filter( ) - filter rows by groupings
+- arrange( ) - reorder and arrange rows by sorting
+- mutate( ) - add new columns as functions of others
+- summarise( ) - collapse dataframe to single row
+
+- distinct( ) - not a core manipulation function, but really useful. Similar to unique( ) in base R
